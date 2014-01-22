@@ -4,7 +4,7 @@ require 'rubygems'
 require 'nokogiri'
 require 'guess_html_encoding'
 
-module Readability
+module DQReadability
   class Document
     DEFAULT_OPTIONS = {
       :retry_length               => 250,
