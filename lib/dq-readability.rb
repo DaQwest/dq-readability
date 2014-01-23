@@ -481,18 +481,18 @@ module DQReadability
           to_remove = false
           reason = ""
           
-#          if (counts["img"] > counts["p"]) && (counts["img"] > 1)
-#            reason = "too many images"
-#            to_remove = true
+          if (counts["img"] > counts["p"]) && (counts["img"] > 1)
+            reason = "too many images"
+            to_remove = true
 #          elsif counts["li"] > counts["p"] && name != "ul" && name != "ol"
 #            reason = "more <li>s than <p>s"
 #            to_remove = true
 		if counts["input"] > (counts["p"] / 3).to_i
             reason = "less than 3x <p>s than <input>s"
            to_remove = true
-         elsif (content_length < options[:min_text_length]) && (counts["img"] != 1)
-           reason = "too short a content length without a single image"
-            to_remove = true
+#         elsif (content_length < options[:min_text_length]) && (counts["img"] != 1)
+#           reason = "too short a content length without a single image"
+#            to_remove = true
          elsif weight < 25 && link_density > 0.2
             reason = "too many links for its weight (#{weight})"
             to_remove = true
