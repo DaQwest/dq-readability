@@ -67,6 +67,20 @@ module DQReadability
 
       # Remove html comment tags
       @html.xpath('//comment()').each { |i| i.remove }
+      
+      # making all the headings of same format
+      @html.css("h1").each do |h|
+		h.name = "h2"
+      end
+      
+      @html.css("h2").each do |h|
+		h.name = "h3"
+      end
+	
+	  @html.css("h4").each do |h|
+		h.name = "h3"
+      end
+    
     end
 
     def images(content=nil, reload=false)
@@ -484,15 +498,15 @@ module DQReadability
           if (counts["img"] > counts["p"]) && (counts["img"] > 1)
             reason = "too many images"
             to_remove = true
-#          elsif counts["li"] > counts["p"] && name != "ul" && name != "ol"
-#            reason = "more <li>s than <p>s"
-#            to_remove = true
-		if counts["input"] > (counts["p"] / 3).to_i
+          elsif counts["li"] > counts["p"] && name != "ul" && name != "ol"
+            reason = "more <li>s than <p>s"
+            to_remove = true
+		elsif counts["input"] > (counts["p"] / 3).to_i
             reason = "less than 3x <p>s than <input>s"
            to_remove = true
-#         elsif (content_length < options[:min_text_length]) && (counts["img"] != 1)
-#           reason = "too short a content length without a single image"
-#            to_remove = true
+         elsif (content_length < options[:min_text_length]) && (counts["img"] != 1)
+           reason = "too short a content length without a single image"
+            to_remove = true
          elsif weight < 25 && link_density > 0.2
             reason = "too many links for its weight (#{weight})"
             to_remove = true
