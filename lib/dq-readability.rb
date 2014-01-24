@@ -84,26 +84,37 @@ module DQReadability
 		h.name = "h3"
       end
 	  
-	  puts @url
-	  
 	  uri = URI.parse(@url)
       host = uri.host
       scheme = uri.scheme
       port = uri.port # defaults to 80
       base = "#{scheme}://#{host}:#{port}/"
 
+
+
+	  # changing img src
       @html.css("img").each do |elem|
         begin
 		  if elem['src'][0] == '/' 
 			elem['src'] = URI.join(base,elem['src']).to_s if URI.parse(elem['src']).host == nil 
 		  else
-			elem['src'] = URI.join(@url,elem['src']).to_s if URI.parse(elem['src']).host == nil
+			if @url.split('').last == '/'
+				elem['src'] = URI.join(@url,elem['src']).to_s if URI.parse(elem['src']).host == nil
+			else
+				x = @url.split('/')
+				x.delete_at(x.length-1)
+				y = ''
+				x.each{|i| y += i+'/'}
+				elem['src'] = URI.join(y,elem['src']).to_s if URI.parse(elem['src']).host == nil
+			end
 		  end 
         rescue URI::InvalidURIError => exc
           elem.remove
         end
       end
 
+      #changing the 'a' href
+    
     
     end
 
