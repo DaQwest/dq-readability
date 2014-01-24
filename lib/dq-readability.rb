@@ -3,9 +3,11 @@
 require 'rubygems'
 require 'nokogiri'
 require 'guess_html_encoding'
+require 'open-uri'
 
 module DQReadability
   class Document
+  
     DEFAULT_OPTIONS = {
       :retry_length               => 250,
       :min_text_length            => 25,
@@ -36,8 +38,9 @@ module DQReadability
 
     def initialize(input, options = {})
       @options = DEFAULT_OPTIONS.merge(options)
-      @input = input
-
+      @input = open(input).read
+	  @url = input
+	  
       if RUBY_VERSION =~ /^(1\.9|2)/ && !@options[:encoding]
         @input = GuessHtmlEncoding.encode(@input, @options[:html_headers]) unless @options[:do_not_guess_encoding]
         @options[:encoding] = @input.encoding.to_s
@@ -80,6 +83,27 @@ module DQReadability
 	  @html.css("h4").each do |h|
 		h.name = "h3"
       end
+	  
+	  puts @url
+	  
+	  uri = URI.parse(@url)
+      host = uri.host
+      scheme = uri.scheme
+      port = uri.port # defaults to 80
+      base = "#{scheme}://#{host}:#{port}/"
+
+      @html.css("img").each do |elem|
+        begin
+		  if elem['src'][0] == '/' 
+			elem['src'] = URI.join(base,elem['src']).to_s if URI.parse(elem['src']).host == nil 
+		  else
+			elem['src'] = URI.join(@url,elem['src']).to_s if URI.parse(elem['src']).host == nil
+		  end 
+        rescue URI::InvalidURIError => exc
+          elem.remove
+        end
+      end
+
     
     end
 
@@ -421,12 +445,12 @@ module DQReadability
         elem.remove
       end
 
-      if @options[:remove_empty_nodes]
-        # remove <p> tags that have no text content - this will also remove p tags that contain only images.
-        node.css("p").each do |elem|
-          elem.remove if elem.content.strip.empty?
-        end
-      end
+#      if @options[:remove_empty_nodes]
+#        # remove <p> tags that have no text content - this will also remove p tags that contain only images.
+#        node.css("p").each do |elem|
+#          elem.remove if elem.content.strip.empty?
+#        end
+#      end
 
       # Conditionally clean <table>s, <ul>s, and <div>s
       clean_conditionally(node, candidates, "table, ul, div")
