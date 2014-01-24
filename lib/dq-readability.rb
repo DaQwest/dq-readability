@@ -3,9 +3,11 @@
 require 'rubygems'
 require 'nokogiri'
 require 'guess_html_encoding'
+require 'open-uri'
 
 module DQReadability
   class Document
+  
     DEFAULT_OPTIONS = {
       :retry_length               => 250,
       :min_text_length            => 25,
@@ -36,8 +38,9 @@ module DQReadability
 
     def initialize(input, options = {})
       @options = DEFAULT_OPTIONS.merge(options)
-      @input = input
-
+      @input = open(input).read
+	  @url = input
+	  
       if RUBY_VERSION =~ /^(1\.9|2)/ && !@options[:encoding]
         @input = GuessHtmlEncoding.encode(@input, @options[:html_headers]) unless @options[:do_not_guess_encoding]
         @options[:encoding] = @input.encoding.to_s
@@ -67,6 +70,41 @@ module DQReadability
 
       # Remove html comment tags
       @html.xpath('//comment()').each { |i| i.remove }
+      
+      # making all the headings of same format
+      @html.css("h1").each do |h|
+		h.name = "h2"
+      end
+      
+      @html.css("h2").each do |h|
+		h.name = "h3"
+      end
+	
+	  @html.css("h4").each do |h|
+		h.name = "h3"
+      end
+	  
+	  puts @url
+	  
+	  uri = URI.parse(@url)
+      host = uri.host
+      scheme = uri.scheme
+      port = uri.port # defaults to 80
+      base = "#{scheme}://#{host}:#{port}/"
+
+      @html.css("img").each do |elem|
+        begin
+		  if elem['src'][0] == '/' 
+			elem['src'] = URI.join(base,elem['src']).to_s if URI.parse(elem['src']).host == nil 
+		  else
+			elem['src'] = URI.join(@url,elem['src']).to_s if URI.parse(elem['src']).host == nil
+		  end 
+        rescue URI::InvalidURIError => exc
+          elem.remove
+        end
+      end
+
+    
     end
 
     def images(content=nil, reload=false)
@@ -407,12 +445,12 @@ module DQReadability
         elem.remove
       end
 
-      if @options[:remove_empty_nodes]
-        # remove <p> tags that have no text content - this will also remove p tags that contain only images.
-        node.css("p").each do |elem|
-          elem.remove if elem.content.strip.empty?
-        end
-      end
+#      if @options[:remove_empty_nodes]
+#        # remove <p> tags that have no text content - this will also remove p tags that contain only images.
+#        node.css("p").each do |elem|
+#          elem.remove if elem.content.strip.empty?
+#        end
+#      end
 
       # Conditionally clean <table>s, <ul>s, and <div>s
       clean_conditionally(node, candidates, "table, ul, div")
@@ -481,13 +519,13 @@ module DQReadability
           to_remove = false
           reason = ""
           
-#          if (counts["img"] > counts["p"]) && (counts["img"] > 1)
-#            reason = "too many images"
-#            to_remove = true
-#          elsif counts["li"] > counts["p"] && name != "ul" && name != "ol"
-#            reason = "more <li>s than <p>s"
-#            to_remove = true
-		if counts["input"] > (counts["p"] / 3).to_i
+          if (counts["img"] > counts["p"]) && (counts["img"] > 1)
+            reason = "too many images"
+            to_remove = true
+          elsif counts["li"] > counts["p"] && name != "ul" && name != "ol"
+            reason = "more <li>s than <p>s"
+            to_remove = true
+		elsif counts["input"] > (counts["p"] / 3).to_i
             reason = "less than 3x <p>s than <input>s"
            to_remove = true
          elsif (content_length < options[:min_text_length]) && (counts["img"] != 1)
