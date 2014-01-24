@@ -1,8 +1,11 @@
 Install
 -------
 Command line:
+
     (sudo) gem install dq-readability
+
 Bundler:
+
     gem "dq-readability"
 Example
 -------
