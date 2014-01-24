@@ -84,23 +84,54 @@ module DQReadability
 		h.name = "h3"
       end
 	  
-	  puts @url
-	  
 	  uri = URI.parse(@url)
       host = uri.host
       scheme = uri.scheme
       port = uri.port # defaults to 80
       base = "#{scheme}://#{host}:#{port}/"
 
+
+
+	  # changing img src
       @html.css("img").each do |elem|
         begin
 		  if elem['src'][0] == '/' 
 			elem['src'] = URI.join(base,elem['src']).to_s if URI.parse(elem['src']).host == nil 
 		  else
-			elem['src'] = URI.join(@url,elem['src']).to_s if URI.parse(elem['src']).host == nil
+			if @url.split('').last == '/'
+				elem['src'] = URI.join(@url,elem['src']).to_s if URI.parse(elem['src']).host == nil
+			else
+				x = @url.split('/')
+				x.delete_at(x.length-1)
+				y = ''
+				x.each{|i| y += i+'/'}
+				elem['src'] = URI.join(y,elem['src']).to_s if URI.parse(elem['src']).host == nil
+			end
 		  end 
-        rescue URI::InvalidURIError => exc
+        rescue
           elem.remove
+        end
+      end
+
+      #changing the 'a' href
+
+	 @html.css("a").each do |elem|
+        begin
+		  if elem['href'][0] == '/' 
+			elem['href'] = URI.join(base,elem['href']).to_s if URI.parse(elem['href']).host == nil 
+		  else
+			if @url.split('').last == '/'
+				elem['href'] = URI.join(@url,elem['href']).to_s if URI.parse(elem['href']).host == nil
+			else
+				x = @url.split('/')
+				x.delete_at(x.length-1)
+				y = ''
+				x.each{|i| y += i+'/'}
+				elem['href'] = URI.join(y,elem['href']).to_s if URI.parse(elem['href']).host == nil
+			end
+		  end 
+        rescue
+          elem['href'] = ""
         end
       end
 

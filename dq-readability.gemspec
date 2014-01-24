@@ -3,7 +3,7 @@ $:.push File.expand_path("../lib", __FILE__)
 
 Gem::Specification.new do |s|
   s.name        = "dq-readability"
-  s.version     = '1.0.1'
+  s.version     = '1.0.2'
   s.authors     = ["Prateek Papriwal"]
   s.email       = ["papriwalprateek@gmail.com"]
   s.homepage    = "http://github.com/DaQwest/dq-readability"
