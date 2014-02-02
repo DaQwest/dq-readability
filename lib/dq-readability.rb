@@ -96,7 +96,11 @@ module DQReadability
       @html.css("img").each do |elem|
         begin
 		  if elem['src'][0] == '/' 
-			elem['src'] = URI.join(base,elem['src']).to_s if URI.parse(elem['src']).host == nil 
+			if elem['src'][1] == '/'
+				elem['src'] = 'http:'+elem['src']
+			else
+				elem['src'] = URI.join(base,elem['src']).to_s if URI.parse(elem['src']).host == nil 
+			end
 		  else
 			if @url.split('').last == '/'
 				elem['src'] = URI.join(@url,elem['src']).to_s if URI.parse(elem['src']).host == nil
@@ -550,10 +554,10 @@ module DQReadability
           to_remove = false
           reason = ""
           
-          if (counts["img"] > counts["p"]) && (counts["img"] > 1)
-            reason = "too many images"
-            to_remove = true
-          elsif counts["li"] > counts["p"] && name != "ul" && name != "ol"
+#          if (counts["img"] > counts["p"]) && (counts["img"] > 1)
+#            reason = "too many images"
+#            to_remove = true
+        if counts["li"] > counts["p"] && name != "ul" && name != "ol"
             reason = "more <li>s than <p>s"
             to_remove = true
 		elsif counts["input"] > (counts["p"] / 3).to_i
