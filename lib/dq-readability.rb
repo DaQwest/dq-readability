@@ -554,10 +554,10 @@ module DQReadability
           to_remove = false
           reason = ""
           
-#          if (counts["img"] > counts["p"]) && (counts["img"] > 1)
-#            reason = "too many images"
-#            to_remove = true
-        if counts["li"] > counts["p"] && name != "ul" && name != "ol"
+          if (counts["img"] > counts["p"]+2)
+            reason = "too many images"
+            to_remove = true
+        elsif counts["li"] > counts["p"] && name != "ul" && name != "ol"
             reason = "more <li>s than <p>s"
             to_remove = true
 		elsif counts["input"] > (counts["p"] / 3).to_i
