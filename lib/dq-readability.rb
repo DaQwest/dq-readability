@@ -117,7 +117,16 @@ module DQReadability
         end
       end
 
-      #changing the 'a' href
+	# changing certain tags to <p> tags
+	
+	x = @html.css("ol")
+	x.each do |t|
+		t.name = "p"
+	end
+	len = @html.css('ol').length
+	debug("length of ol tag #{len}")
+
+     #changing the 'a' href
 
 	 @html.css("a").each do |elem|
         begin
