@@ -538,7 +538,7 @@ module DQReadability
       html = node.serialize(:save_with => save_opts)
 
       # Get rid of duplicate whitespace
-      return html.gsub(/[\r\n\f]+/, "\n" )
+      return "<head><meta http-equiv='Content-Type' content='text/html; charset=utf-8'></head>" + "\n" + html.gsub(/[\r\n\f]+/, "\n" )
     end
 
     def clean_conditionally(node, candidates, selector)
