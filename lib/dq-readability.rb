@@ -538,7 +538,15 @@ module DQReadability
       html = node.serialize(:save_with => save_opts)
 
       # Get rid of duplicate whitespace
-      return "<head><meta http-equiv='Content-Type' content='text/html; charset=utf-8'></head>" + "\n" + html.gsub(/[\r\n\f]+/, "\n" )
+      html = "<head><meta http-equiv='Content-Type' content='text/html; charset=utf-8'></head>" + "\n" + html.gsub(/[\r\n\f]+/, "\n" )
+      
+      
+      # get rid of incompitable characters
+      if html.encode('utf-8').include?('Â') 
+		html = html.encode('utf-8').gsub('Â',' ')
+      end
+      
+      return html
     end
 
     def clean_conditionally(node, candidates, selector)
