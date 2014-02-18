@@ -1,3 +1,10 @@
+Version
+-------
+1.0.4 released. Check out https://rubygems.org/gems/dq-readability
+
+* competing structure for fighting invalid characters
+* Wikipedia image case resolved
+
 Install
 -------
 Command line:
