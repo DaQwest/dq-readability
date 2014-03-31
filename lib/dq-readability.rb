@@ -17,7 +17,8 @@ module DQReadability
       :remove_empty_nodes         => true,
       :min_image_width            => 130,
       :min_image_height           => 80,
-      :ignore_image_format        => []
+      :ignore_image_format        => [],
+      :bypass                     => false
     }.freeze
     
     REGEXES = {
@@ -51,6 +52,7 @@ module DQReadability
       @weight_classes = @options[:weight_classes]
       @clean_conditionally = @options[:clean_conditionally]
       @best_candidate_has_image = true
+      @bypass = @options[:bypass]
       make_html
     end
 
@@ -144,10 +146,16 @@ module DQReadability
 			end
 		  end 
         rescue
-          elem['href'] = ""
         end
       end
 
+	  # removing edit spans
+	  
+	  @html.css('span').each do |elem|
+		if elem.text.downcase == "[edit]"
+			elem.remove
+		end
+	  end
     
     end
 
@@ -296,6 +304,7 @@ module DQReadability
     end
 
     def content(remove_unlikely_candidates = :default)
+      if @bypass == false
       @remove_unlikely_candidates = false if remove_unlikely_candidates == false
 
       prepare_candidates
@@ -318,6 +327,13 @@ module DQReadability
         content
       else
         cleaned_article
+      end
+      else
+		make_html
+		s = Nokogiri::XML::Node::SaveOptions
+		save_opts = s::NO_DECLARATION | s::NO_EMPTY_TAGS | s::AS_XHTML
+		html = @html.serialize(:save_with => save_opts)
+		return html
       end
     end
 
