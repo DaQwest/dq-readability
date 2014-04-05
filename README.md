@@ -1,7 +1,8 @@
 Version
 -------
-1.0.5 released. Check out https://rubygems.org/gems/dq-readability
+1.0.6 released. Check out https://rubygems.org/gems/dq-readability
 
+* Parameter ```:math``` for enabling latex/math equation in web page.
 * Parameter ```:bypass``` for bypassing readability cleaning.
 * competing structure for fighting invalid characters
 * Wikipedia image case resolved
@@ -29,3 +30,11 @@ Bypassing
 There are certain webpages(mostly .edu websites) which do not need readability cleaning. Rather they are already in the best form. Such articles could bypass cleaning by feeding the ```:bypass``` parameter as ```true```. By deafault, it would be ```false```.
 
     DQReadability::Document.new(source,:tags=>%w[div pre p], :attributes=>%w[href src], :bypass=>true).content
+
+
+Math Equations
+--------------
+
+For webpages containing math equations and codes powered by MATHJAX, the ```:math``` parameter could be turned ```true```. By default, it would be ```false```.
+
+    DQReadability::Document.new(source,:tags=>%w[div pre p], :attributes=>%w[href src], :math=>true).content
