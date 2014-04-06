@@ -18,7 +18,8 @@ module DQReadability
       :min_image_width            => 130,
       :min_image_height           => 80,
       :ignore_image_format        => [],
-      :bypass                     => false
+      :bypass                     => false,
+      :math						  => false
     }.freeze
     
     REGEXES = {
@@ -53,6 +54,7 @@ module DQReadability
       @clean_conditionally = @options[:clean_conditionally]
       @best_candidate_has_image = true
       @bypass = @options[:bypass]
+      @math = @options[:math]
       make_html
     end
 
@@ -554,8 +556,22 @@ module DQReadability
       html = node.serialize(:save_with => save_opts)
 
       # Get rid of duplicate whitespace
-      html = "<head><meta http-equiv='Content-Type' content='text/html; charset=utf-8'></head>" + "\n" + html.gsub(/[\r\n\f]+/, "\n" )
-      
+      if @math == false
+		html = "<head><meta http-equiv='Content-Type' content='text/html; charset=utf-8'></head>" + "\n" + html.gsub(/[\r\n\f]+/, "\n" )
+      else
+		head = <<HTML
+<head><meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
+		<script type='text/x-mathjax-config'>
+			MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\\\(','\\\\)']]}});
+		</script>
+		<script type='text/javascript'
+			src='http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'>
+		</script>
+</head>
+HTML
+		
+		html = head + "\n" + html.gsub(/[\r\n\f]+/, "\n" )
+      end
       
       # get rid of incompitable characters
       if html.encode('utf-8').include?('Â') 
