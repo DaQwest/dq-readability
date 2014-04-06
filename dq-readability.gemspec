@@ -3,12 +3,12 @@ $:.push File.expand_path("../lib", __FILE__)
 
 Gem::Specification.new do |s|
   s.name        = "dq-readability"
-  s.version     = '1.0.5'
+  s.version     = '1.0.6'
   s.authors     = ["Prateek Papriwal"]
   s.email       = ["papriwalprateek@gmail.com"]
   s.homepage    = "http://github.com/DaQwest/dq-readability"
   s.summary     = %q{Port of arc90's readability project to ruby}
-  s.description = %q{Extracts main content of the webpage. Presents in good readable format.}
+  s.description = %q{Extracts main content of the webpage. Presents in good readable format. This gem is actively used to display articles in http://algorithm.daqwest.com}
 
   s.rubyforge_project = "dq-readability"
 
